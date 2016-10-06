@@ -20,8 +20,9 @@ var Animal = Class.extend(function(){
         this.walking = true;
     }
 });
+```
 
-
+```javascript
 var Cat = Animal.extend(function(){
 
     // Private var
@@ -45,9 +46,11 @@ var Cat = Animal.extend(function(){
         return ">> meow !!"
     }
 });
+```
 
-// You can extend using plain objects '{}'
-// But you can not create private functions
+> You can extend using plain objects '{}', But you can not create private functions
+
+```javascript
 var Lion = Cat.extend({
 
     // Override
