@@ -1,3 +1,5 @@
+# [deprecated] Please use: http://extendjs.org/
+
 # JSClass
 Simple and easy Inheritance with JavaScript
 
