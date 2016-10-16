@@ -1,0 +1,156 @@
+<!--
+  ~ ******************************************************************************
+  ~ Copyright (c) 2013-2014 CriativaSoft (www.criativasoft.com.br)
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the Eclipse Public License v1.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.eclipse.org/legal/epl-v10.html
+  ~
+  ~  Contributors:
+  ~  Ricardo JL Rufino - Initial API and Implementation
+  ~ ******************************************************************************
+  -->
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>QUnit Example</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.0.1.css">
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+<script src="https://code.jquery.com/qunit/qunit-2.0.1.js"></script>
+<!--<script src="JSClass.js"></script>-->
+<script src="extend.js"></script>
+<script>
+
+
+    var Animal = Class.extend(function(){
+
+        // Public var
+        this.walking = false;
+
+        this.attrs = { speed : 0  };
+
+        //  Contructor
+        this.constructor = function (_walk) {
+            if(_walk) this.walking = _walk;
+        };
+
+        // Public function
+        this.walk = function () {
+            this.walking = true;
+            this.attrs.speed = 10;
+        }
+
+    });
+
+    var Cat = Animal.extend(function(){
+
+        // Private var
+        var furtive = false;
+
+        this.constructor = function (_walk) {
+            this.super(_walk); // call supper constructor
+        };
+
+        // Private function
+        function sneakyWalk(){
+            furtive = true;
+            this.attrs.speed = 1;
+        }
+
+        // @Override
+        this.walk = function () {
+            this.super.walk(); // Call super function...
+            sneakyWalk.call(this);
+        }
+
+        this.meow = function () {
+            return ">> meow !!"
+        }
+
+        this.getFurtive = function(){
+            return furtive;
+        }
+    });
+
+    var Lion = Cat.extend(function(){
+
+        // Override
+        this.meow = function () {
+            // Lion meow ?? I think not ..
+            return "meow not + " + this.hunt();
+        };
+
+        this.hunt = function(){
+            if(!this.walking) this.walk();
+            return "hunting !! (walking ? : "+this.walking+")";
+        }
+
+    });
+
+    QUnit.test("Test constructor", function( assert ) {
+        var a1 = new Animal(true);
+        var a2 = new Animal(false);
+        var a3 = new Cat(true);
+        var a4 = new Lion(true);
+        assert.equal( a1.walking, true, "a1.walking" );
+        assert.equal( a2.walking, false, "a2.walking" );
+        assert.equal( a3.walking, true, "a3.walking" );
+        assert.equal( a4.walking, true, "a4.walking" );
+    });
+
+
+    QUnit.test("Test instanceOF - CAT", function( assert ) {
+        var c = new Cat();
+        var l = new Lion();
+        assert.ok( c instanceof Animal, "c instanceof Animal => true" );
+        assert.ok( c instanceof Cat, "c instanceof Cat  => true" );
+        assert.ok( !(c instanceof Lion), "c instanceof Lion => false" );
+    });
+
+    QUnit.test("Test instanceOF - Lion", function( assert ) {
+        var c = new Cat();
+        var l = new Lion();
+        assert.ok( l instanceof Animal, "l instanceof Animal => true" );
+        assert.ok( l instanceof Cat, "l instanceof Cat  => true" );
+        assert.ok( l instanceof Lion, "l instanceof Lion => true" );
+    });
+
+    QUnit.test("Change private variable of same class", function( assert ) {
+        var c1 = new Cat();
+        var c2 = new Cat();
+        c1.walk();
+        assert.ok( c1.getFurtive(), "Check getFurtive c1" );
+        assert.ok( !c2.getFurtive(), "Check getFurtive c2" );
+    });
+
+    QUnit.test("Change public variable of same class", function( assert ) {
+        var c1 = new Cat();
+        var c2 = new Cat();
+        c1.walk();
+        assert.ok( c1.walking, "Check walking c1" );
+        assert.ok( !c2.walking, "Check walking c2" );
+    });
+
+    QUnit.test("Change public object of same class", function( assert ) {
+        var c1 = new Cat();
+        var c2 = new Cat();
+        c1.walk();
+        assert.equal( c1.attrs.speed, 1, "Check speed c1" );
+        assert.equal( c2.attrs.speed, 0, "Check speed c2" );
+    });
+
+    QUnit.test("Change public object of other class", function( assert ) {
+        var c1 = new Cat();
+        var c2 = new Lion();
+        c1.walk();
+        assert.equal( c1.attrs.speed, 1, "Check speed c1" );
+        assert.equal( c2.attrs.speed, 0, "Check speed c2" );
+    });
+</script>
+</body>
+</html>
